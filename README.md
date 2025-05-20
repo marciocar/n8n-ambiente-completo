@@ -93,14 +93,16 @@ O ritual de instalação irá:
 Após completar o ritual de iniciação, você terá acesso a um reino repleto de ferramentas poderosas:
 
 - **n8n** (🧙‍♂️): Seu companheiro principal na jornada de automação
-- **PostgreSQL** (📚): O guardião do conhecimento e memória de seus feitiços
-- **Redis** (⚡): O acelerador de magias, garantindo execuções rápidas e confiáveis
-- **pgAdmin** (🔍): A lente mágica para explorar seus dados
-- **PostgreSQL/pgVector** (🧮): Artefato ancestral para cálculos vetoriais e IA
-- **Qdrant** (🧠): Biblioteca de conhecimento vetorial para magias de IA
-- **MinIO** (📦): Baú dimensional para armazenamento de artefatos
-- **RabbitMQ** (🐇): Mensageiro veloz entre seus feitiços de automação
-- **Elasticsearch** (🔎): Olho que tudo vê para busca e análise de dados
+- **PostgreSQL** (📚): O guardião do conhecimento, armazena dados de forma robusta e confiável para automações críticas
+- **Redis** (⚡): O acelerador de magias, fornece respostas instantâneas e gerenciamento de estado
+- **pgAdmin** (🔍): A lente mágica, para visualizar e manipular seus dados com facilidade
+- **PostgreSQL/pgVector** (🧮): Os portais dimensionais para IA, permitem pesquisa vetorial e automações inteligentes
+- **Qdrant** (🧠): Biblioteca de conhecimento vetorial para magias de IA avançadas
+- **MinIO** (📦): O baú dimensional, compatível com S3 para armazenamento de arquivos e mídia em grande escala
+- **RabbitMQ** (🐇): O mensageiro veloz, garante comunicação confiável entre sistemas diversos
+- **Elasticsearch** (🔎): O olho que tudo vê, para busca e análise de dados em tempo real
+
+Para mais detalhes sobre cada ferramenta e como elas potencializam suas automações, consulte nosso tratado [Transformação Digital com N8N](docs/TRANSFORMACAO_COM_N8N.md).
 
 ## 🏆 Desafios do Mestre da Automação
 
@@ -168,7 +170,24 @@ Para controlar quais serviços deseja invocar, edite o grimório `docker-compose
 
 Para desbloquear poderes especiais nas suas automações, estude o [Grimório das Bibliotecas Ancestrais](docs/BIBLIOTECAS_MAGICAS.md) - um guia completo sobre como invocar as magias primitivas dos Programadores Code diretamente em seus fluxos de trabalho.
 
+O grimório cataloga estas poderosas magias JavaScript:
+
+#### ⏳ Magias do Tempo
+- **moment** - Manipulação e formatação avançada de datas, o manipulador temporal primordial
+- **date-fns** - Funções modulares para cálculo e transformação temporal de alta precisão
+- **dayjs** - Alternativa leve e eficiente para manipulação de datas e formatos
+- **luxon** - Manipulação avançada de datas com suporte robusto a fusos horários
+
+#### 🧰 Utilitários Arcanos
+- **lodash** - A caixa de ferramentas universal com mais de 200 funções para manipulação de dados
+- **uuid** - Gerador de identificadores únicos, essenciais para distinguir objetos mágicos
+- **validator** - Verificador de validade para strings, emails, URLs e outros formatos
+- **numeral** - Formatação e manipulação avançada de números em diversos formatos
+- **mathjs** - Biblioteca completa para operações matemáticas complexas
+
 > *"As bibliotecas são a ponte entre o mundo visual do n8n e a magia profunda da programação."*
+
+Para a lista completa de magias disponíveis e exemplos de uso, consulte o [grimório completo](docs/BIBLIOTECAS_MAGICAS.md).
 
 ### Encantamentos Úteis
 
