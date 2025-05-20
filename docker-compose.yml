@@ -1,0 +1,329 @@
+services:
+  # ===========================================
+  # SERVIÇO PRINCIPAL DO N8N
+  # Executa a interface web e o servidor principal
+  # ===========================================
+  n8n-main:
+    image: n8nio/n8n:${N8N_VERSION}
+    container_name: n8n-main
+    restart: always
+    ports:
+      - "${N8N_PORT}:5678"
+    environment:
+      # Configurações de host e conexão
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      
+      # Habilitação de pacotes da comunidade
+      - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - N8N_REINSTALL_MISSING_PACKAGES=true
+      
+      # Configurações de segurança para funções do Node
+      - NODE_FUNCTION_ALLOW_BUILTIN=*
+      - NODE_FUNCTION_ALLOW_BUILTIN=crypto,fs
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      
+      # Bibliotecas externas permitidas nas funções de nó
+      # Lista expandida com as bibliotecas mais comuns utilizadas no n8n
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,axios,date-fns,uuid,crypto-js,validator,numeral,mathjs,xml2js,cheerio,dotenv,js-yaml,papaparse,fast-csv,qs,jsonwebtoken,node-fetch,dayjs,luxon,xlsx
+      
+      # URL de webhook para callbacks externos
+      - WEBHOOK_URL=http://localhost:${N8N_PORT}/
+      
+      # Chave de criptografia para dados sensíveis
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      
+      # Configuração de modo de execução em fila
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=${REDIS_HOST}
+      - QUEUE_BULL_REDIS_PORT=6379
+      
+      # Configurações de banco de dados
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${POSTGRES_HOST}
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      # Volume para armazenar configurações e credenciais do n8n
+      - ${DATA_FOLDER}/.n8n:/root/.n8n
+      # Volume para arquivos locais acessíveis ao n8n
+      - ./n8n-local-files:/files
+    depends_on:
+      n8n-postgres:
+        condition: service_healthy
+      n8n-redis:
+        condition: service_healthy
+  
+  # ===========================================
+  # SERVIÇO WORKER DO N8N
+  # Processa execuções de workflows em fila
+  # ===========================================
+  # Para desabilitar este serviço, comente todas as linhas do serviço ou apenas o bloco inteiro
+  n8n-worker:
+    image: n8nio/n8n:${N8N_VERSION}
+    container_name: n8n-worker
+    command: worker
+    restart: always
+    ports:
+      - "${WORKER_PORT}:5678"
+    environment:
+      # Chave de criptografia (deve ser a mesma do serviço principal)
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      
+      # Configuração de modo de execução em fila
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=${REDIS_HOST}
+      - QUEUE_BULL_REDIS_PORT=6379
+      
+      # Configurações de banco de dados (mesmas do serviço principal)
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${POSTGRES_HOST}
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      
+      # Permitir as mesmas bibliotecas externas que o serviço principal
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,axios,date-fns,uuid,crypto-js,validator,numeral,mathjs,xml2js,cheerio,dotenv,js-yaml,papaparse,fast-csv,qs,jsonwebtoken,node-fetch,dayjs,luxon,xlsx
+    depends_on:
+      n8n-postgres:
+        condition: service_healthy
+      n8n-redis:
+        condition: service_healthy
+  
+  # ===========================================
+  # SERVIÇO REDIS
+  # Usado para gerenciar fila de execução
+  # ===========================================
+  # ATENÇÃO: Este serviço é essencial para o funcionamento do n8n com workers
+  n8n-redis:
+    image: redis:latest
+    container_name: n8n-redis
+    command:
+      - redis-server
+      - --appendonly yes
+      - --port 6379
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_PORT=6379
+      - PORT=6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  
+  # ===========================================
+  # SERVIÇO POSTGRESQL
+  # Banco de dados para o n8n
+  # ===========================================
+  # ATENÇÃO: Este serviço é essencial para o funcionamento do n8n
+  n8n-postgres:
+    image: postgres:13
+    container_name: n8n-postgres
+    restart: always
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  
+  # ===========================================
+  # SERVIÇO POSTGRESQL COM PGVECTOR
+  # Banco de dados PostgreSQL com suporte a vetores
+  # ===========================================
+  # Para desabilitar este serviço, comente todas as linhas do serviço ou apenas o bloco inteiro
+  n8n-pgvector:
+    image: pgvector/pgvector:pg17
+    container_name: n8n-pgvector
+    restart: always
+    environment:
+      POSTGRES_USER: ${PGVECTOR_USER}
+      POSTGRES_PASSWORD: ${PGVECTOR_PASSWORD}
+      POSTGRES_DB: ${PGVECTOR_DB}
+    ports:
+      - "${PGVECTOR_PORT}:5432"
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGVECTOR_USER} -d ${PGVECTOR_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  
+  # ===========================================
+  # SERVIÇO QDRANT
+  # Banco de dados de vetores para IA
+  # ===========================================
+  # Para desabilitar este serviço, comente todas as linhas do serviço ou apenas o bloco inteiro
+  qdrant:
+    image: qdrant/qdrant
+    container_name: n8n-qdrant
+    hostname: qdrant
+    restart: unless-stopped
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
+    ports:
+      - "${QDRANT_HTTP_PORT}:6333"
+      - "${QDRANT_GRPC_PORT}:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+  
+  # ===========================================
+  # SERVIÇO MINIO
+  # Storage compatível com S3
+  # ===========================================
+  # Para desabilitar este serviço, comente todas as linhas do serviço ou apenas o bloco inteiro
+  n8n-minio:
+    image: minio/minio:latest
+    container_name: n8n-minio
+    restart: always
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    ports:
+      - "${MINIO_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  
+  # ===========================================
+  # SERVIÇO RABBITMQ
+  # Message broker para comunicação assíncrona
+  # ===========================================
+  # Para desabilitar este serviço, comente todas as linhas do serviço ou apenas o bloco inteiro
+  n8n-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: n8n-rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  
+  # ===========================================
+  # SERVIÇO ELASTICSEARCH
+  # Motor de busca e análise distribuída
+  # ===========================================
+  # Para desabilitar este serviço, comente todas as linhas do serviço ou apenas o bloco inteiro
+  n8n-elasticsearch:
+    image: elasticsearch:${ELASTICSEARCH_VERSION}
+    container_name: n8n-elasticsearch
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms${ELASTICSEARCH_HEAP_SIZE} -Xmx${ELASTICSEARCH_HEAP_SIZE}"
+      - xpack.security.enabled=true
+      - ELASTIC_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "${ELASTICSEARCH_PORT}:9200"
+      - "${ELASTICSEARCH_TRANSPORT_PORT}:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+  
+  # ===========================================
+  # SERVIÇO PGADMIN
+  # Interface web para gerenciamento do PostgreSQL
+  # ===========================================
+  # Para desabilitar este serviço, comente todas as linhas do serviço ou apenas o bloco inteiro
+  n8n-pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: n8n-pgadmin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+      - PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY=False
+      - PGADMIN_CONFIG_LOGIN_BANNER='Ambiente N8N'
+      - PGADMIN_SETUP_USER=${PGADMIN_USER}
+      - PGADMIN_SETUP_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - "${PGADMIN_PORT}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      n8n-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://localhost:80/misc/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# ===========================================
+# VOLUMES PERSISTENTES
+# ===========================================
+volumes:
+  # Volume para dados do PostgreSQL
+  postgres_data:
+  # Volume para dados do Redis
+  redis_data:
+  # Volume para dados do Qdrant
+  qdrant_storage:
+  # Volume para dados do MinIO
+  minio_data:
+  # Volume para dados do RabbitMQ
+  rabbitmq_data:
+  # Volume para dados do Elasticsearch
+  elasticsearch_data:
+  # Volume para dados do PostgreSQL com pgvector
+  pgvector_data:
+  # Volume para dados do pgAdmin
+  pgadmin_data:
+
+# ===========================================
+# CONFIGURAÇÃO DE REDE
+# ===========================================
+networks:
+  n8n-network:
+    driver: bridge

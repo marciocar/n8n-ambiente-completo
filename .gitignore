@@ -1,0 +1,36 @@
+# Diretórios de dados
+/data
+/n8n-local-files
+
+# Arquivos de ambiente
+.env
+
+# Logs
+*.log
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos do Docker
+.docker
+
+# Dependências
+/node_modules
+/.pnp
+.pnp.js
+
+# Diretórios de build
+/build
+/dist
+
+# Cache
+.npm
+.eslintcache
+
+# Arquivos de IDE
+/.idea
+/.vscode
+*.sublime-*
+*.swp
+*.swo 
