@@ -216,8 +216,8 @@ O conceito de gamificação aplicado neste projeto é baseado no livro **"O Jogo
 Se este Santuário de Automação te ajudou de alguma forma em sua jornada, considere realizar o antigo **Ritual da Estrela**. Este poderoso encantamento não apenas fortalece este repositório, mas também ajuda outros buscadores a encontrar estes conhecimentos.
 
 <p align="center">
-  <a href="https://github.com/seu-usuario/n8n-ambiente-completo/stargazers">
-    <img src="https://img.shields.io/github/stars/seu-usuario/n8n-ambiente-completo?style=for-the-badge&color=yellow" alt="Stars">
+  <a href="https://github.com/marciocar/n8n-ambiente-completo/stargazers">
+    <img src="https://img.shields.io/github/stars/marciocar/n8n-ambiente-completo?style=for-the-badge&color=yellow" alt="Stars">
   </a>
 </p>
 
