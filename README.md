@@ -25,7 +25,7 @@ Se você já é versado nas artes do Docker, pode utilizar esta passagem secreta
 
 ```bash
 # Clone o grimório ancestral
-git clone https://github.com/seu-usuario/n8n-ambiente-completo.git
+git clone https://github.com/marciocar/n8n-ambiente-completo.git
 cd n8n-ambiente-completo
 
 # Conjure o pergaminho de configuração
