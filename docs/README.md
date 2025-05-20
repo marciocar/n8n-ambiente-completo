@@ -14,6 +14,51 @@
 
 - [**Banner do N8N**](images/n8n-granaai-ojdn.png) - A imagem representativa da Jornada do Mestre da Automação.
 
+## 🔮 Arsenal de Transformação Digital
+
+Estas são as principais ferramentas abordadas no tratado [**Transformação Digital com N8N**](TRANSFORMACAO_COM_N8N.md):
+
+- **🗄️ PostgreSQL** - O guardião do conhecimento, armazena dados de forma robusta e confiável para automações críticas
+- **⚡ Redis** - O acelerador de magias, fornece respostas instantâneas e gerenciamento de estado
+- **🧠 pgVector & Qdrant** - Os portais dimensionais para IA, permitem pesquisa vetorial e automações inteligentes
+- **📦 MinIO** - O baú dimensional, compatível com S3 para armazenamento de arquivos e mídia em grande escala
+- **🐇 RabbitMQ** - O mensageiro veloz, garante comunicação confiável entre sistemas diversos
+- **🔍 Elasticsearch** - O olho que tudo vê, para busca e análise de dados em tempo real
+- **🖥️ pgAdmin** - A lente mágica, para visualizar e manipular seus dados com facilidade
+
+## 📚 Bibliotecas Ancestrais
+
+O [**Grimório das Bibliotecas Ancestrais**](BIBLIOTECAS_MAGICAS.md) cataloga estas poderosas magias JavaScript:
+
+### ⏳ Magias do Tempo
+- **moment** - Manipulação e formatação avançada de datas, o manipulador temporal primordial
+- **date-fns** - Funções modulares para cálculo e transformação temporal de alta precisão
+- **dayjs** - Alternativa leve e eficiente para manipulação de datas e formatos
+- **luxon** - Manipulação avançada de datas com suporte robusto a fusos horários
+
+### 🧰 Utilitários Arcanos
+- **lodash** - A caixa de ferramentas universal com mais de 200 funções para manipulação de dados
+- **uuid** - Gerador de identificadores únicos, essenciais para distinguir objetos mágicos
+- **validator** - Verificador de validade para strings, emails, URLs e outros formatos
+- **numeral** - Formatação e manipulação avançada de números em diversos formatos
+- **mathjs** - Biblioteca completa para operações matemáticas complexas
+
+### 🌐 Comunicação com Outros Reinos
+- **axios** - O emissário entre reinos, realiza requisições HTTP com elegância e confiabilidade
+- **node-fetch** - Invocador primitivo para requisições HTTP baseado na API Fetch
+- **cheerio** - Extrator de conhecimento de pergaminhos HTML (web scraping)
+
+### 🔐 Magias de Proteção
+- **crypto-js** - Arsenal de encantos criptográficos para proteger dados sensíveis
+- **jsonwebtoken** - Forjador de tokens de autenticação para viagens seguras entre reinos
+
+### 📊 Transmutação de Dados
+- **xml2js** - Conversor de XML para objetos JavaScript
+- **js-yaml** - Tradutor entre YAML e objetos JavaScript
+- **papaparse/fast-csv** - Decifradores de tabelas CSV com diferentes especialidades
+- **xlsx** - Manipulador de planilhas Excel, permite ler e criar documentos complexos
+- **qs** - Tradutor entre strings de consulta e objetos JavaScript
+
 ## 🧙‍♂️ Como Utilizar Esta Biblioteca
 
 Estes documentos são projetados para serem estudados na seguinte ordem:
